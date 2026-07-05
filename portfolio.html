@@ -1,0 +1,566 @@
+<!--
+  ============================================================
+  HOW TO CUSTOMIZE THIS PORTFOLIO
+  ============================================================
+  1. Search for "YOUR NAME" and replace with your actual name.
+  2. Search for "YOUR EMAIL" / "YOUR INSTAGRAM" / "YOUR YOUTUBE"
+     and drop in your real handles/links.
+  3. Each project card below has:
+       data-embed="" -> paste a YouTube/Vimeo EMBED url here,
+       e.g. https://www.youtube.com/embed/dQw4w9WgXcQ
+       (Get this from YouTube: Share > Embed > copy the src url)
+     Until you add a link, clicking the card just shows a note.
+  4. Swap the placeholder gradients (search "thumb thumb--")
+     for real <img> thumbnails if you'd rather show a still frame:
+       <div class="thumb thumb--01"><img src="yourframe.jpg" ...></div>
+  5. Edit the project TITLE / TAG / duration text directly in the
+     markup for each <article class="card">.
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YOUR NAME — Video Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0b0d0c;
+    --surface: #14171a;
+    --surface-2: #1b1f22;
+    --text: #f2f0ea;
+    --text-muted: #9aa0a6;
+    --warm: #e8873a;
+    --cool: #2fa8a0;
+    --line: rgba(242,240,234,0.09);
+    --radius: 4px;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+
+  /* film grain overlay */
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:1;
+    opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* scroll scrubber = signature element */
+  .scrubber{
+    position:fixed; top:0; left:0; width:100%; height:3px;
+    background:var(--surface-2); z-index:1000;
+  }
+  .scrubber__fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg, var(--cool), var(--warm));
+  }
+  .scrubber__head{
+    position:fixed; top:0; width:11px; height:11px; border-radius:50%;
+    background:var(--text); left:0%; transform:translate(-50%,-30%);
+    z-index:1001; box-shadow:0 0 0 3px var(--bg);
+    transition:left 0.05s linear;
+  }
+
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 32px; }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:3px; z-index:900;
+    background:rgba(11,13,12,0.85); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px; max-width:1120px; margin:0 auto;
+  }
+  .logo{
+    font-family:'Anton', sans-serif; letter-spacing:0.5px;
+    font-size:20px; text-transform:uppercase;
+  }
+  .logo span{ color:var(--warm); }
+  .navlinks{ display:flex; gap:28px; list-style:none; }
+  .navlinks a{
+    color:var(--text-muted); text-decoration:none; font-size:14px;
+    font-weight:500; letter-spacing:0.02em; transition:color 0.2s;
+  }
+  .navlinks a:hover, .navlinks a:focus-visible{ color:var(--text); }
+  .navlinks .mono-tag{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--cool); }
+  @media (max-width:680px){ .navlinks{ display:none; } }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; padding:120px 0 100px;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:""; position:absolute; inset:-20% -10%;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(47,168,160,0.16), transparent 55%),
+      radial-gradient(ellipse at 80% 60%, rgba(232,135,58,0.14), transparent 55%);
+    z-index:0;
+  }
+  .hero__inner{ position:relative; z-index:2; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'JetBrains Mono', monospace; font-size:13px;
+    color:var(--cool); border:1px solid var(--line);
+    padding:6px 12px; border-radius:20px; margin-bottom:28px;
+  }
+  .eyebrow .dot{
+    width:6px; height:6px; border-radius:50%; background:var(--warm);
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+
+  h1.display{
+    font-family:'Anton', sans-serif;
+    font-size:clamp(42px, 7vw, 84px);
+    line-height:0.98; text-transform:uppercase;
+    letter-spacing:0.3px; max-width:900px;
+  }
+  h1.display .accent{ color:var(--warm); }
+  h1.display .accent2{ color:var(--cool); }
+
+  .hero p.sub{
+    margin-top:26px; max-width:520px; color:var(--text-muted);
+    font-size:17px;
+  }
+
+  .hero__ctas{ display:flex; gap:14px; margin-top:40px; flex-wrap:wrap; }
+  .btn{
+    font-family:'Inter', sans-serif; font-weight:600; font-size:14px;
+    padding:14px 26px; border-radius:var(--radius); text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid transparent; cursor:pointer; transition:transform 0.15s ease, background 0.2s;
+  }
+  .btn:focus-visible{ outline:2px solid var(--cool); outline-offset:2px; }
+  .btn--primary{ background:var(--text); color:var(--bg); }
+  .btn--primary:hover{ transform:translateY(-2px); }
+  .btn--ghost{ border-color:var(--line); color:var(--text); }
+  .btn--ghost:hover{ border-color:var(--text-muted); }
+
+  /* chapter headers used across sections instead of generic 01/02/03 --
+     framed as video timecodes/chapters since the whole subject is a timeline */
+  .chapter{
+    display:flex; align-items:baseline; gap:16px; margin-bottom:44px;
+  }
+  .chapter__code{
+    font-family:'JetBrains Mono', monospace; color:var(--warm); font-size:14px;
+  }
+  .chapter__title{
+    font-family:'Anton', sans-serif; text-transform:uppercase;
+    font-size:clamp(22px,3vw,32px); letter-spacing:0.3px;
+  }
+  .chapter__line{ flex:1; height:1px; background:var(--line); }
+
+  section{ padding:100px 0; border-bottom:1px solid var(--line); }
+
+  /* ---------- ABOUT ---------- */
+  .about__grid{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:64px; }
+  @media (max-width:800px){ .about__grid{ grid-template-columns:1fr; } }
+  .about p{ color:var(--text-muted); font-size:16px; margin-bottom:16px; max-width:52ch; }
+  .about strong{ color:var(--text); }
+
+  .toolbelt{ display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+  .chip{
+    font-family:'JetBrains Mono', monospace; font-size:12.5px;
+    border:1px solid var(--line); padding:8px 14px; border-radius:20px;
+    color:var(--text-muted); background:var(--surface);
+  }
+
+  .statcard{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); padding:26px; display:flex; flex-direction:column; gap:18px;
+  }
+  .statrow{ display:flex; justify-content:space-between; align-items:baseline; }
+  .statrow .num{ font-family:'Anton', sans-serif; font-size:30px; }
+  .statrow .num.warm{ color:var(--warm); }
+  .statrow .num.cool{ color:var(--cool); }
+  .statrow .lbl{ font-size:13px; color:var(--text-muted); text-align:right; max-width:55%; }
+
+  /* ---------- WORK GRID ---------- */
+  .grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:22px;
+  }
+  @media (max-width:900px){ .grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:600px){ .grid{ grid-template-columns:1fr; } }
+
+  .card{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); overflow:hidden; cursor:pointer;
+    transition:transform 0.2s ease, border-color 0.2s ease;
+  }
+  .card:hover, .card:focus-visible{ transform:translateY(-4px); border-color:rgba(242,240,234,0.2); }
+  .card:focus-visible{ outline:2px solid var(--cool); outline-offset:2px; }
+
+  .thumb{
+    position:relative; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center;
+  }
+  .thumb--01{ background:linear-gradient(135deg,#1e3a3a,#2fa8a0 130%); }
+  .thumb--02{ background:linear-gradient(135deg,#3a2a1e,#e8873a 130%); }
+  .thumb--03{ background:linear-gradient(135deg,#1e223a,#4a5bd6 130%); }
+  .thumb--04{ background:linear-gradient(135deg,#3a1e2e,#d64a8a 130%); }
+  .thumb--05{ background:linear-gradient(135deg,#2a3a1e,#9ad64a 130%); }
+  .thumb--06{ background:linear-gradient(135deg,#1e2a3a,#4ac0d6 130%); }
+  .thumb--07{ background:linear-gradient(135deg,#3a301e,#d6b64a 130%); }
+  .thumb--08{ background:linear-gradient(135deg,#301e3a,#a64ad6 130%); }
+
+  .thumb .play{
+    width:46px; height:46px; border-radius:50%;
+    background:rgba(11,13,12,0.55); border:1px solid rgba(242,240,234,0.4);
+    display:flex; align-items:center; justify-content:center;
+    backdrop-filter:blur(2px);
+  }
+  .thumb .play::after{
+    content:""; border-style:solid; border-width:7px 0 7px 11px;
+    border-color:transparent transparent transparent var(--text);
+    margin-left:3px;
+  }
+  .thumb .badge{
+    position:absolute; bottom:8px; right:8px;
+    font-family:'JetBrains Mono', monospace; font-size:11px;
+    background:rgba(11,13,12,0.75); padding:3px 7px; border-radius:3px;
+  }
+  .thumb .barwrap{
+    position:absolute; bottom:0; left:0; width:100%; height:3px;
+    background:rgba(255,255,255,0.15);
+  }
+  .thumb .bar{ height:100%; background:var(--warm); width:38%; }
+
+  .card__body{ padding:16px 18px 20px; }
+  .card__tag{
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--cool);
+    text-transform:uppercase; letter-spacing:0.05em;
+  }
+  .card__title{ font-size:16px; font-weight:600; margin-top:6px; }
+  .card__note{ font-size:13px; color:var(--text-muted); margin-top:6px; }
+
+  /* ---------- SERVICES ---------- */
+  .services{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  @media (max-width:900px){ .services{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .services{ grid-template-columns:1fr; } }
+  .svc{
+    border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 20px; background:var(--surface);
+  }
+  .svc__code{ font-family:'JetBrains Mono', monospace; color:var(--warm); font-size:12px; }
+  .svc h3{ font-size:17px; margin:12px 0 8px; }
+  .svc p{ font-size:13.5px; color:var(--text-muted); }
+
+  /* ---------- CONTACT ---------- */
+  .contact{ text-align:center; border-bottom:none; }
+  .contact h2{
+    font-family:'Anton', sans-serif; text-transform:uppercase;
+    font-size:clamp(30px,5vw,54px); max-width:680px; margin:0 auto 20px;
+  }
+  .contact p{ color:var(--text-muted); max-width:480px; margin:0 auto 36px; }
+  .contact__links{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+
+  footer{
+    padding:28px 0; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-muted);
+  }
+
+  /* ---------- MODAL ---------- */
+  .modal{
+    position:fixed; inset:0; background:rgba(0,0,0,0.8);
+    display:none; align-items:center; justify-content:center; z-index:2000;
+    padding:24px;
+  }
+  .modal.open{ display:flex; }
+  .modal__inner{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    max-width:900px; width:100%; overflow:hidden;
+  }
+  .modal__frame{ position:relative; aspect-ratio:16/9; background:#000; }
+  .modal__frame iframe{ width:100%; height:100%; border:0; }
+  .modal__empty{
+    height:100%; display:flex; align-items:center; justify-content:center;
+    color:var(--text-muted); font-size:14px; text-align:center; padding:20px;
+    font-family:'JetBrains Mono', monospace;
+  }
+  .modal__foot{ padding:14px 18px; display:flex; justify-content:space-between; align-items:center; }
+  .modal__foot span{ font-size:14px; font-weight:600; }
+  .modal__close{
+    background:none; border:1px solid var(--line); color:var(--text);
+    padding:8px 14px; border-radius:4px; cursor:pointer; font-size:13px;
+  }
+  .modal__close:hover{ border-color:var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="scrubber"><div class="scrubber__fill" id="scrubFill"></div></div>
+<div class="scrubber__head" id="scrubHead"></div>
+
+<header>
+  <nav>
+    <div class="logo">YOUR<span>NAME</span></div>
+    <ul class="navlinks">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li class="mono-tag" id="clock">00:00:00:00</li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero__inner">
+    <div class="eyebrow"><span class="dot"></span> REEL — NOW PLAYING</div>
+    <h1 class="display">I cut raw footage into <span class="accent">retention</span> and <span class="accent2">rewatches</span>.</h1>
+    <p class="sub">Video editor for YouTube creators — long-form, Shorts, and everything in between. I turn a folder of clips into a video people finish, save, and share.</p>
+    <div class="hero__ctas">
+      <a href="#work" class="btn btn--primary">Watch the reel</a>
+      <a href="#contact" class="btn btn--ghost">Get in touch</a>
+    </div>
+  </div>
+</section>
+
+<section class="about">
+  <div class="wrap">
+    <div class="chapter">
+      <span class="chapter__code">00:01</span>
+      <span class="chapter__title">Editor</span>
+      <span class="chapter__line"></span>
+    </div>
+    <div class="about__grid">
+      <div class="about">
+        <p>I'm <strong>Your Name</strong>, a video editor focused on YouTube content — the kind of editing that respects a creator's voice while shaping pacing, structure, and sound to hold attention. I've cut everything from talking-head vlogs to fast, meme-heavy Shorts.</p>
+        <p>My process starts with the story, not the timeline: what's the hook, where does interest dip, what earns the next 10 seconds. Then I bring in sound design, color, and motion graphics to support it — never to distract from it.</p>
+        <div class="toolbelt">
+          <span class="chip">Premiere Pro</span>
+          <span class="chip">DaVinci Resolve</span>
+          <span class="chip">After Effects</span>
+          <span class="chip">Photoshop</span>
+          <span class="chip">Audition</span>
+        </div>
+      </div>
+      <div class="statcard">
+        <div class="statrow"><span class="num warm">6+</span><span class="lbl">Projects in this reel</span></div>
+        <div class="statrow"><span class="num cool">24fps–60fps</span><span class="lbl">Comfortable across frame rates & formats</span></div>
+        <div class="statrow"><span class="num warm">16:9 / 9:16</span><span class="lbl">Long-form and vertical Shorts</span></div>
+        <div class="statrow"><span class="num cool">48–72h</span><span class="lbl">Typical turnaround per video</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="chapter">
+      <span class="chapter__code">00:02</span>
+      <span class="chapter__title">Selects</span>
+      <span class="chapter__line"></span>
+    </div>
+
+    <div class="grid">
+
+      <!-- CARD 1 -->
+      <article class="card" tabindex="0" role="button" data-embed="" data-title="Weekly Vlog — Episode 12">
+        <div class="thumb thumb--01"><div class="play"></div><span class="badge">14:22</span><div class="barwrap"><div class="bar"></div></div></div>
+        <div class="card__body">
+          <div class="card__tag">Vlog</div>
+          <div class="card__title">Weekly Vlog — Episode 12</div>
+          <div class="card__note">Pacing + jump-cut cleanup, sound design</div>
+        </div>
+      </article>
+
+      <!-- CARD 2 -->
+      <article class="card" tabindex="0" role="button" data-embed="" data-title="Product Review: Everyday Carry">
+        <div class="thumb thumb--02"><div class="play"></div><span class="badge">08:47</span><div class="barwrap"><div class="bar" style="width:60%"></div></div></div>
+        <div class="card__body">
+          <div class="card__tag">Review</div>
+          <div class="card__title">Product Review: Everyday Carry</div>
+          <div class="card__note">B-roll integration, on-screen graphics</div>
+        </div>
+      </article>
+
+      <!-- CARD 3 -->
+      <article class="card" tabindex="0" role="button" data-embed="" data-title="Explainer: How Noise-Cancelling Works">
+        <div class="thumb thumb--03"><div class="play"></div><span class="badge">06:15</span><div class="barwrap"><div class="bar" style="width:22%"></div></div></div>
+        <div class="card__body">
+          <div class="card__tag">Explainer</div>
+          <div class="card__title">How Noise-Cancelling Works</div>
+          <div class="card__note">Motion graphics, diagram animation</div>
+        </div>
+      </article>
+
+      <!-- CARD 4 -->
+      <article class="card" tabindex="0" role="button" data-embed="" data-title="Shorts Pack — Studio Highlights">
+        <div class="thumb thumb--04"><div class="play"></div><span class="badge">0:38</span><div class="barwrap"><div class="bar" style="width:80%"></div></div></div>
+        <div class="card__body">
+          <div class="card__tag">Shorts</div>
+          <div class="card__title">Studio Highlights (Shorts pack)</div>
+          <div class="card__note">Fast cuts, captions, trend-format sound</div>
+        </div>
+      </article>
+
+      <!-- CARD 5 -->
+      <article class="card" tabindex="0" role="button" data-embed="" data-title="Q&A Livestream Recap">
+        <div class="thumb thumb--05"><div class="play"></div><span class="badge">11:03</span><div class="barwrap"><div class="bar" style="width:45%"></div></div></div>
+        <div class="card__body">
+          <div class="card__tag">Recap</div>
+          <div class="card__title">Q&A Livestream Recap</div>
+          <div class="card__note">Multi-cam sync, highlight selection</div>
+        </div>
+      </article>
+
+      <!-- CARD 6 -->
+      <article class="card" tabindex="0" role="button" data-embed="" data-title="Travel Diary: 48 Hours">
+        <div class="thumb thumb--06"><div class="play"></div><span class="badge">09:54</span><div class="barwrap"><div class="bar" style="width:33%"></div></div></div>
+        <div class="card__body">
+          <div class="card__tag">Travel</div>
+          <div class="card__title">Travel Diary: 48 Hours</div>
+          <div class="card__note">Color grading, music-driven pacing</div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="chapter">
+      <span class="chapter__code">00:03</span>
+      <span class="chapter__title">What I offer</span>
+      <span class="chapter__line"></span>
+    </div>
+    <div class="services">
+      <div class="svc">
+        <div class="svc__code">// LONG-FORM</div>
+        <h3>YouTube editing</h3>
+        <p>Full edits for vlogs, reviews, and explainers — structure, pacing, sound, and graphics.</p>
+      </div>
+      <div class="svc">
+        <div class="svc__code">// SHORTS</div>
+        <h3>Shorts &amp; Reels</h3>
+        <p>Fast, caption-driven cutdowns built for retention on vertical platforms.</p>
+      </div>
+      <div class="svc">
+        <div class="svc__code">// GRADE</div>
+        <h3>Color grading</h3>
+        <p>Consistent, mood-matched color across a whole video or channel.</p>
+      </div>
+      <div class="svc">
+        <div class="svc__code">// THUMBS</div>
+        <h3>Thumbnails</h3>
+        <p>Click-worthy thumbnail design that matches the video's promise.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="chapter" style="justify-content:center;">
+      <span class="chapter__code">00:04</span>
+      <span class="chapter__title">Let's cut something</span>
+      <span class="chapter__line" style="max-width:60px;"></span>
+    </div>
+    <h2>Got footage that needs a story?</h2>
+    <p>Send over a link to your channel or raw clips and I'll tell you exactly how I'd approach the edit.</p>
+    <div class="contact__links">
+      <a class="btn btn--primary" href="mailto:YOUR EMAIL">Email me</a>
+      <a class="btn btn--ghost" href="https://youtube.com/@YOURYOUTUBE" target="_blank" rel="noopener">YouTube</a>
+      <a class="btn btn--ghost" href="https://instagram.com/YOURINSTAGRAM" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 YOUR NAME — ALL FRAMES RESERVED</footer>
+
+<div class="modal" id="modal">
+  <div class="modal__inner">
+    <div class="modal__frame" id="modalFrame">
+      <div class="modal__empty">No video linked yet — paste a YouTube/Vimeo embed URL<br>into this card's data-embed attribute in the code.</div>
+    </div>
+    <div class="modal__foot">
+      <span id="modalTitle"></span>
+      <button class="modal__close" id="modalClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // live timecode (24fps) — signature element
+  const clockEl = document.getElementById('clock');
+  const start = performance.now();
+  function tick(){
+    const elapsed = performance.now() - start;
+    const totalFrames = Math.floor(elapsed / (1000/24));
+    const ff = totalFrames % 24;
+    const totalSec = Math.floor(totalFrames / 24);
+    const ss = totalSec % 60;
+    const mm = Math.floor(totalSec/60) % 60;
+    const hh = Math.floor(totalSec/3600);
+    const pad = n => String(n).padStart(2,'0');
+    clockEl.textContent = `${pad(hh)}:${pad(mm)}:${pad(ss)}:${pad(ff)}`;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // scroll scrubber
+  const fill = document.getElementById('scrubFill');
+  const head = document.getElementById('scrubHead');
+  function updateScrub(){
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    fill.style.width = pct + '%';
+    head.style.left = pct + '%';
+  }
+  document.addEventListener('scroll', updateScrub);
+  updateScrub();
+
+  // modal for project cards
+  const modal = document.getElementById('modal');
+  const modalFrame = document.getElementById('modalFrame');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalClose = document.getElementById('modalClose');
+
+  function openCard(card){
+    const embed = card.getAttribute('data-embed');
+    const title = card.getAttribute('data-title') || '';
+    modalTitle.textContent = title;
+    if(embed && embed.trim() !== ''){
+      modalFrame.innerHTML = `<iframe src="${embed}" title="${title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    } else {
+      modalFrame.innerHTML = `<div class="modal__empty">No video linked yet — paste a YouTube/Vimeo embed URL<br>into this card's data-embed attribute in the code.</div>`;
+    }
+    modal.classList.add('open');
+  }
+  function closeModal(){
+    modal.classList.remove('open');
+    modalFrame.innerHTML = '';
+  }
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click', ()=>openCard(card));
+    card.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openCard(card); }
+    });
+  });
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', e=>{ if(e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeModal(); });
+</script>
+
+</body>
+</html>
